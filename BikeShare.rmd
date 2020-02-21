@@ -1,0 +1,193 @@
+---
+title: "Bike Share Project"
+author: "Tim Fuller"
+date: "2/19/2020"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+     
+You will answer your questions of interest about the Motivate datasets using R. To help guide your work in this project, a template with helper code and comments is provided in a notebook file on the next page. You will need the three city dataset files too:
+editor_options: 
+  chunk_output_type: inline
+---
+
+Explore Bike Share Data
+For this project, your goal is to ask and answer three questions about the available bikeshare data from Washington, Chicago, and New York. This notebook can be submitted directly through the workspace when you are confident in your results.
+
+You will be graded against the project Rubric by a mentor after you have submitted. To get you started, you can use the template below, but feel free to be creative in your solutions!
+
+
+Question 1
+How does each city Compare to the other on a month by month basis?
+```{r}
+#Question 1
+
+#Initiate Packages
+library(ggplot2)
+library(ggthemes)
+library(lubridate)
+
+#Set Theme
+theme_set(theme_minimal(8))
+
+#Data Import
+ny <- read.csv('new-york-city.csv')
+wash <- read.csv('washington.csv')
+chi <- read.csv('chicago.csv')
+
+#Append City Name to Columns
+ny$city <- 'New York'
+wash$city <- 'Washington'
+chi$city <- 'Chicago'
+
+#Removes Gender and Birth.Year to match data with Washington
+matchCitySet = function(cty)
+{
+  cty$Gender <- NULL
+  cty$Birth.Year <- NULL
+  return(cty)
+}
+
+#Matching Data to Washington
+ny <- matchCitySet(ny)
+chi <- matchCitySet(chi)
+
+#Combine Cities to full set
+fullSet <-  rbind(ny,wash,chi)
+
+#Count By Month Per City
+ggplot(aes(x=city), data=fullSet) +
+  geom_histogram(stat='count') +
+  ggtitle("Histogram of Bike Share Count Per Month by City") +
+  labs(x="City", y="Trip Count") +
+  scale_y_continuous(limits = c(0,100000), breaks = seq(0,100000,10000), labels=scales::comma) +
+  facet_wrap(~month(Start.Time,TRUE), scale="free")
+
+#The Below Summary Shows the June Spike
+by(month(fullSet$Start.Time, TRUE),fullSet$city,summary)
+```
+
+Here we see each city getting a spike in users in June, with Chicago seeing the largest.  
+It would be interested to map this data with relevant weather information.
+
+
+Question 2
+What is the Most Popular Day Of Bike Rentals?
+
+```{r}
+#Initiate Packages
+library(ggplot2)
+library(ggthemes)
+library(lubridate)
+
+#Set Theme
+theme_set(theme_minimal(12))
+
+#Data Import
+ny <- read.csv('dataSets\\new-york-city.csv')
+wash <- read.csv('dataSets\\washington.csv')
+chi <- read.csv('dataSets\\chicago.csv')
+
+#Append City Name to Columns
+ny$city <- 'New York'
+wash$city <- 'Washington'
+chi$city <- 'Chicago'
+
+#Removes Gender and Birth.Year to match data with Washington
+matchCitySet = function(cty)
+{
+  cty$Gender <- NULL
+  cty$Birth.Year <- NULL
+  return(cty)
+}
+
+#Matching Data to Washington
+ny <- matchCitySet(ny)
+chi <- matchCitySet(chi)
+
+#Combine Cities to full set
+fullSet <-  rbind(ny,wash,chi)
+
+#Ordered Factor To Keep Weekdays in order
+fullSet$day <- factor(weekdays(as.Date(fullSet$Start.Time, abbreviate=TRUE)),
+                      levels=c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"))
+
+ggplot(fullSet, aes(x=fullSet$day, y=stat(count), fill=fullSet$city)) +
+  geom_bar(position='dodge') +
+  labs(x="Day of Week", y="Rental Count", fill = "City") +
+  ggtitle("Bikeshare Rental Count by Day of Week", subtitle = "New York Bikers Love Wednesday") +
+  scale_y_continuous(limits = c(0,55000), breaks = seq(0,55000,5000),
+                     labels=scales::comma)
+
+#You Can see the Wednesday Spike Below
+by(fullSet$day,fullSet$city,summary)
+```
+
+
+
+Here we see slight elevations during weekdays.  Most likely bikers commuting to work.  
+Wednesday is a bit of an outlier for New York and Washington. 
+
+Question 3
+How do trip durations compare across the 3 cities?
+```{r}
+#Initiate Packages
+library(ggplot2)
+library(ggthemes)
+
+#Set Theme
+theme_set(theme_minimal(12))
+
+#Data Import
+ny <- read.csv('dataSets\\new-york-city.csv')
+wash <- read.csv('dataSets\\washington.csv')
+chi <- read.csv('dataSets\\chicago.csv')
+
+#Removes Gender and Birth.Year to match data with Washington
+matchCitySet = function(cty)
+{
+  cty$Gender <- NULL
+  cty$Birth.Year <- NULL
+  return(cty)
+}
+
+#Matching Data to Washington
+ny <- matchCitySet(ny)
+chi <- matchCitySet(chi)
+
+#Append City Name to Columns
+ny$city <- 'New York'
+wash$city <- 'Washington'
+chi$city <- 'Chicago'
+
+#Combine Cities to full set
+fullSet <-  rbind(ny,wash,chi)
+
+##Trip Duration Analysis By City
+ggplot(aes(x=city,y=Trip.Duration/60), data=na.omit(fullSet), group=1) +
+  geom_point(
+    alpha=1/10, 
+    position = position_jitter(h=0),
+    color='grey30') +
+  scale_y_continuous(limits = c(0,480), breaks = seq(0,480,60)) +
+  labs(x="City", y="Trip Duration (Minutes)") +
+  ggtitle("Trip Duration By City", subtitle = "Washington generally has longer durations but maintains a similar average time.") +
+  stat_summary(fun.y=mean, aes(group=1), geom="line",linetype=2, color="blue")
+
+by(fullSet$Trip.Duration/60,fullSet$city,summary)
+
+#The below formula shows the mean trip duration in minutes
+#You can see that washington has about a 5 minute higher average
+by(fullSet$Trip.Duration/60,fullSet$city,mean)
+  
+```
+
+Here we can see that Washington trends towards longer trips over the other two cities.
+We can also see the data has an exceptionally long tail which is why the limits are set
+to 8 hour trip durations for the evaluation. 
