@@ -11,6 +11,12 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+```{r}
+#Initiate Packages
+library(ggplot2)
+library(ggthemes)
+library(lubridate)
+```
      
 You will answer your questions of interest about the Motivate datasets using R. To help guide your work in this project, a template with helper code and comments is provided in a notebook file on the next page. You will need the three city dataset files too:
 editor_options: 
@@ -25,13 +31,9 @@ You will be graded against the project Rubric by a mentor after you have submitt
 
 Question 1
 How does each city Compare to the other on a month by month basis?
+
 ```{r}
 #Question 1
-
-#Initiate Packages
-library(ggplot2)
-library(ggthemes)
-library(lubridate)
 
 #Set Theme
 theme_set(theme_minimal(8))
@@ -81,10 +83,6 @@ Question 2
 What is the Most Popular Day Of Bike Rentals?
 
 ```{r}
-#Initiate Packages
-library(ggplot2)
-library(ggthemes)
-library(lubridate)
 
 #Set Theme
 theme_set(theme_minimal(12))
@@ -136,11 +134,8 @@ Wednesday is a bit of an outlier for New York and Washington.
 
 Question 3
 How do trip durations compare across the 3 cities?
-```{r}
-#Initiate Packages
-library(ggplot2)
-library(ggthemes)
 
+```{r}
 #Set Theme
 theme_set(theme_minimal(12))
 
