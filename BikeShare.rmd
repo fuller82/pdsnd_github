@@ -17,6 +17,18 @@ library(ggplot2)
 library(ggthemes)
 library(lubridate)
 ```
+
+```{r}
+#Data Import
+ny <- read.csv('new-york-city.csv')
+wash <- read.csv('washington.csv')
+chi <- read.csv('chicago.csv')
+
+#Append City Name to Columns
+ny$city <- 'New York'
+wash$city <- 'Washington'
+chi$city <- 'Chicago'
+```
      
 You will answer your questions of interest about the Motivate datasets using R. To help guide your work in this project, a template with helper code and comments is provided in a notebook file on the next page. You will need the three city dataset files too:
 editor_options: 
@@ -38,15 +50,7 @@ How does each city Compare to the other on a month by month basis?
 #Set Theme
 theme_set(theme_minimal(8))
 
-#Data Import
-ny <- read.csv('new-york-city.csv')
-wash <- read.csv('washington.csv')
-chi <- read.csv('chicago.csv')
 
-#Append City Name to Columns
-ny$city <- 'New York'
-wash$city <- 'Washington'
-chi$city <- 'Chicago'
 
 #Removes Gender and Birth.Year to match data with Washington
 matchCitySet = function(cty)
@@ -86,16 +90,6 @@ What is the Most Popular Day Of Bike Rentals?
 
 #Set Theme
 theme_set(theme_minimal(12))
-
-#Data Import
-ny <- read.csv('dataSets\\new-york-city.csv')
-wash <- read.csv('dataSets\\washington.csv')
-chi <- read.csv('dataSets\\chicago.csv')
-
-#Append City Name to Columns
-ny$city <- 'New York'
-wash$city <- 'Washington'
-chi$city <- 'Chicago'
 
 #Removes Gender and Birth.Year to match data with Washington
 matchCitySet = function(cty)
@@ -138,11 +132,6 @@ How do trip durations compare across the 3 cities?
 ```{r}
 #Set Theme
 theme_set(theme_minimal(12))
-
-#Data Import
-ny <- read.csv('dataSets\\new-york-city.csv')
-wash <- read.csv('dataSets\\washington.csv')
-chi <- read.csv('dataSets\\chicago.csv')
 
 #Removes Gender and Birth.Year to match data with Washington
 matchCitySet = function(cty)
